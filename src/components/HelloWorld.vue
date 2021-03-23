@@ -8,6 +8,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import axios, { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
+import { login } from '../services/user.services' 
 
 @Component
 export default class HelloWorld extends Vue {
@@ -15,10 +16,17 @@ export default class HelloWorld extends Vue {
   @Prop() private msg!: string;
   info = ''
 
-  mounted () {
-    axios
-      .get<string>('http://127.0.0.1:8000/api/sezioni/?format=json')
-      .then(response => (this.info = response.data))
+  async mounted () {
+    //let response = await axios.get<string>('http://127.0.0.1:8000/api/sezioni/?format=json');
+    //this.info = response.data;      
+
+    var token = await login('patrizio', 'Pass123$'); 
+    console.log(token)
+    const AuthStr = 'Bearer '.concat(token); 
+    let response = await axios.get<string>('http://127.0.0.1:8000/api/esami/?format=json',
+    { 'headers': { 'Authorization': AuthStr } });
+    console.log(response);
+    this.info = response.data; 
   }
 }
 
